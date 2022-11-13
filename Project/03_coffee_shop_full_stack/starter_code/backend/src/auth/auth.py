@@ -172,8 +172,8 @@ def requires_auth(permission=''):
             jwtToken = get_token_auth_header()
             try:
                 payload = verify_decode_jwt(jwtToken)
+                print(payload)
             except:
-                print('permission is not found')
                 raise AuthError({
                     'code': 'unauthorized',
                     'description': 'Permission not found.'
