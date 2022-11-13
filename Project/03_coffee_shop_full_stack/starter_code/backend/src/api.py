@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
 import json
 from flask_cors import CORS
+import sys
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth
@@ -17,7 +18,7 @@ CORS(app)
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 !! Running this funciton will add one
 '''
-db_drop_and_create_all()
+# db_drop_and_create_all()
 
 # ROUTES
 '''
@@ -39,6 +40,7 @@ def get_drinks():
             'drinks': formatted_drinks
         })
     except:
+        print(sys.exc_info())
         abort(500)
 
 
@@ -50,8 +52,9 @@ def get_drinks():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks-details')
-def get_drink_details():
+@app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
+def get_drink_details(jwt):
     try:
         drinks = Drink.query.all()
         formatted_drinks = [drink.long() for drink in drinks]
